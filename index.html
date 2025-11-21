@@ -5,7 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Free Nights Calculator - Calculate the number of nights between two dates and total cost. Perfect for hotel bookings, vacation planning, and travel budgeting.">
     <meta name="keywords" content="nights calculator, date calculator, hotel nights, vacation calculator, travel planner">
-    <title>Nights Calculator - Calculate Nights Between Dates & Total Cost</title>
+    
+    <!-- SECURITY HEADERS -->
+    <!-- Content Security Policy: Restricts resources to trusted sources only -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
+    <!-- Prevent MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <!-- Privacy protection for links -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <!-- Disable unused powerful features -->
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=(), usb=()">
+    
+    <title>NighCalc - Calculate Nights Between Dates & Total Cost</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -624,9 +635,9 @@
                 <p class="text-[10px] text-gray-700">Made for Indian Travelers & Planners</p>
             </div>
             <div class="flex gap-6 mt-4 md:mt-0">
-                <a href="#" class="hover:text-accent transition-colors">Privacy</a>
-                <a href="#" class="hover:text-accent transition-colors">Terms</a>
-                <a href="#" class="hover:text-accent transition-colors">Sitemap</a>
+                <a href="#" rel="noopener noreferrer" class="hover:text-accent transition-colors">Privacy</a>
+                <a href="#" rel="noopener noreferrer" class="hover:text-accent transition-colors">Terms</a>
+                <a href="#" rel="noopener noreferrer" class="hover:text-accent transition-colors">Sitemap</a>
             </div>
         </footer>
 
