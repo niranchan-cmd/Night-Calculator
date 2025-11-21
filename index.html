@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free Nights Calculator - Calculate the number of nights between two dates and total cost. Perfect for hotel bookings, vacation planning, and travel budgeting.">
+    <meta name="keywords" content="nights calculator, date calculator, hotel nights, vacation calculator, travel planner">
+    <title>Nights Calculator - Calculate Nights Between Dates & Total Cost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600&display=swap');
+        
+        :root {
+            --bg-color: #050505;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --accent-color: #CCF381; /* Vibrant Lime/Yellow */
+            --accent-hover: #b5d972;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+
+        /* Grid Layout System */
+        .studio-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            max-width: 1440px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Vertical Grid Lines Background */
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .grid-line {
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        
+        .grid-line:last-child {
+            border-right: none;
+        }
+
+        /* Section Styling */
+        .studio-section {
+            grid-column: span 12;
+            border-bottom: 1px solid var(--border-color);
+            padding: 60px 40px;
+            position: relative;
+        }
+
+        .studio-section.no-padding {
+            padding: 0;
+        }
+
+        /* Input Styling */
+        .input-group {
+            position: relative;
+            border-right: 1px solid var(--border-color);
+            padding: 40px;
+            transition: background 0.3s ease;
+        }
+        
+        .input-group:last-child {
+            border-right: none;
+        }
+        
+        .input-group:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .input-label {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 15px;
+        }
+
+        .studio-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            padding: 10px 0;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .studio-input:focus {
+            border-bottom-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .studio-input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+        
+        .studio-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        /* Big Typography */
+        .hero-title {
+            font-size: clamp(40px, 8vw, 100px);
+            line-height: 0.9;
+            font-weight: 400;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-dim);
+            max-width: 500px;
+            font-weight: 300;
+        }
+
+        /* Results Display */
+        .result-box {
+            padding: 40px;
+            border-right: 1px solid var(--border-color);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .result-box:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .result-box:last-child {
+            border-right: none;
+        }
+
+        .result-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 500;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .result-value.accent {
+            color: var(--accent-color);
+        }
+
+        /* Breakdown Section */
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 15px;
+            color: var(--text-dim);
+        }
+        
+        .breakdown-row:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-row strong {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Feature List */
+        .feature-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 30px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .studio-grid {
+                border-left: none;
+                border-right: none;
+            }
+            
+            .input-group, .result-box {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 30px 20px;
+            }
+            
+            .studio-section {
+                padding: 40px 20px;
+            }
+            
+            .hero-title {
+                font-size: 48px;
+            }
+        }
+
+        /* Utilities */
+        .text-accent { color: var(--accent-color); }
+        .border-accent { border-color: var(--accent-color); }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scroll Animations */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity;
+        }
+
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+
+        /* Button Style */
+        .studio-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: var(--text-main);
+            color: var(--bg-color);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+            border: 1px solid var(--text-main);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .studio-btn:hover {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Card Hover Effect */
+        .hover-card {
+            transition: background-color 0.3s ease;
+        }
+        .hover-card:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
+        /* FAQ Styles */
+        .faq-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 25px 0;
+            cursor: pointer;
+        }
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            color: var(--text-dim);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            margin-top: 15px;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Grid Layout -->
+    <div class="studio-grid">
+        <!-- Background Lines -->
+        <div class="grid-lines">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+        </div>
+
+        <!-- Header Section -->
+        <header class="studio-section flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-[#CCF381] rounded-full"></div>
+                <span class="font-['Space_Grotesk'] font-medium tracking-widest text-sm uppercase">NighCalc</span>
+            </div>
+            <div class="text-xs text-gray-500 uppercase tracking-widest">
+                Indian Standard
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <div class="studio-section">
+            <h1 class="hero-title">
+                Nights <br>
+                <span class="text-accent">Calculator</span>.
+            </h1>
+            <p class="hero-subtitle mt-6">
+                Precision date analytics for travel and budget planning. Calculate duration and costs with integrated GST computation instantly.
+            </p>
+        </div>
+
+        <!-- Calculator Inputs -->
+        <div class="studio-section no-padding">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+                <!-- Check-in -->
+                <div class="input-group">
+                    <label for="checkin" class="input-label">01 / Check-in Date</label>
+                    <input type="date" id="checkin" class="studio-input">
+                </div>
+                
+                <!-- Check-out -->
+                <div class="input-group">
+                    <label for="checkout" class="input-label">02 / Check-out Date</label>
+                    <input type="date" id="checkout" class="studio-input">
+                </div>
+                
+                <!-- Rate -->
+                <div class="input-group">
+                    <label for="pernight" class="input-label">03 / Rate Per Night (₹)</label>
+                    <input type="number" id="pernight" placeholder="0.00" min="0" step="0.01" class="studio-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section (Hidden initially) -->
+        <div id="results" class="studio-section no-padding hidden animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                <!-- Nights -->
+                <div class="result-box">
+                    <div class="result-label">
+                        <i class="fas fa-moon"></i> Duration
+                    </div>
+                    <div class="result-value" id="nightsResult">0</div>
+                    <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide">Total Nights</div>
+                </div>
+
+                <!-- Cost -->
+                <div class="result-box cost-related hidden">
+                    <div class="result-label text-emerald-400">
+                        <i class="fas fa-tag"></i> Base Cost
+                    </div>
+                    <div class="result-value" id="totalCostWithoutGST">₹0</div>
+                    <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide">Excluding GST</div>
+                </div>
+
+                <!-- GST -->
+                <div class="result-box cost-related hidden">
+                    <div class="result-label text-orange-400">
+                        <i class="fas fa-percentage"></i> Tax
+                    </div>
+                    <div class="result-value" id="gstAmount">₹0</div>
+                    <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide">GST @ 5%</div>
+                </div>
+
+                <!-- Total -->
+                <div class="result-box cost-related hidden" style="background: rgba(204, 243, 129, 0.05);">
+                    <div class="result-label text-accent">
+                        <i class="fas fa-wallet"></i> Final Total
+                    </div>
+                    <div class="result-value accent" id="totalCostWithGST">₹0</div>
+                    <div class="text-xs text-gray-500 mt-2 uppercase tracking-wide">Including GST</div>
+                </div>
+            </div>
+
+            <!-- Breakdown Panel -->
+            <div id="breakdown" class="p-10 border-t border-[rgba(255,255,255,0.15)] cost-related hidden">
+                <h3 class="font-['Space_Grotesk'] text-lg mb-6 uppercase tracking-wide">Calculation Breakdown</h3>
+                <div class="max-w-2xl space-y-2" id="breakdownText">
+                    <!-- Dynamic Content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Message -->
+        <div id="infoMessage" class="studio-section">
+            <div class="flex items-start gap-4 text-gray-400">
+                <i class="fas fa-info-circle mt-1 text-accent"></i>
+                <p>Select your check-in and check-out dates above to begin calculation.</p>
+            </div>
+        </div>
+
+        <!-- Infinite Marquee -->
+        <div class="studio-section no-padding overflow-hidden border-b border-[rgba(255,255,255,0.15)]">
+            <div class="marquee-container py-4 bg-[#CCF381] text-black">
+                <div class="marquee-content font-['Space_Grotesk'] text-lg font-bold uppercase tracking-wider">
+                    Calculate Nights • Budget Planning • GST Included • Indian Standard • Precision Analytics • Hotel Bookings • Travel Planning • Calculate Nights • Budget Planning • GST Included • Indian Standard • Precision Analytics • Hotel Bookings • Travel Planning •
+                </div>
+            </div>
+        </div>
+
+        <!-- Methodology Section -->
+        <div class="studio-section reveal-on-scroll">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div class="lg:col-span-4">
+                    <span class="text-accent font-['Space_Grotesk'] text-sm uppercase tracking-widest mb-4 block">The Mechanics</span>
+                    <h2 class="text-4xl md:text-5xl font-light leading-tight mb-6">Precision in <br>Every Count.</h2>
+                </div>
+                <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="stagger-delay-1 reveal-on-scroll">
+                        <p class="text-gray-400 text-lg font-light leading-relaxed">
+                            Our algorithm utilizes the <span class="text-white">Gregorian calendar standard</span> to compute the exact temporal difference between two timestamps. We account for leap years, month variances, and timezone standardization to ensure zero margin for error.
+                        </p>
+                    </div>
+                    <div class="stagger-delay-2 reveal-on-scroll">
+                        <p class="text-gray-400 text-lg font-light leading-relaxed">
+                            Financial computations are hardcoded with the <span class="text-white">Indian financial structure</span> in mind, automatically applying the standard 5% GST slab for hospitality services, ensuring your budget planning is audit-ready.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications Grid -->
+        <div class="studio-section no-padding">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                <div class="input-group hover-card reveal-on-scroll stagger-delay-1" style="height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <i class="fas fa-hotel text-2xl text-accent mb-6"></i>
+                        <h3 class="font-['Space_Grotesk'] text-xl mb-2">Hotel Stays</h3>
+                        <p class="text-sm text-gray-500">Calculate exact booking costs including tax for vacations or business trips.</p>
+                    </div>
+                    <div class="text-xs uppercase tracking-widest text-gray-600">01 / Hospitality</div>
+                </div>
+                
+                <div class="input-group hover-card reveal-on-scroll stagger-delay-2" style="height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <i class="fas fa-passport text-2xl text-accent mb-6"></i>
+                        <h3 class="font-['Space_Grotesk'] text-xl mb-2">Visa Planning</h3>
+                        <p class="text-sm text-gray-500">Track days spent in a country to ensure compliance with visa regulations.</p>
+                    </div>
+                    <div class="text-xs uppercase tracking-widest text-gray-600">02 / Immigration</div>
+                </div>
+                
+                <div class="input-group hover-card reveal-on-scroll stagger-delay-3" style="height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <i class="fas fa-chart-pie text-2xl text-accent mb-6"></i>
+                        <h3 class="font-['Space_Grotesk'] text-xl mb-2">Project Sprints</h3>
+                        <p class="text-sm text-gray-500">Determine exact duration for project timelines and billing cycles.</p>
+                    </div>
+                    <div class="text-xs uppercase tracking-widest text-gray-600">03 / Corporate</div>
+                </div>
+
+                <div class="input-group hover-card reveal-on-scroll stagger-delay-4" style="height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <i class="fas fa-file-contract text-2xl text-accent mb-6"></i>
+                        <h3 class="font-['Space_Grotesk'] text-xl mb-2">Lease Agreements</h3>
+                        <p class="text-sm text-gray-500">Verify pro-rata calculations for short-term rentals or lease extensions.</p>
+                    </div>
+                    <div class="text-xs uppercase tracking-widest text-gray-600">04 / Legal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="studio-section reveal-on-scroll">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div class="lg:col-span-4">
+                    <h2 class="text-3xl font-light mb-4">Common Queries</h2>
+                    <p class="text-gray-500">Everything you need to know about date calculations and tax logic.</p>
+                </div>
+                <div class="lg:col-span-8">
+                    <div class="faq-item reveal-on-scroll stagger-delay-1">
+                        <div class="faq-question">
+                            <span>How are the nights calculated?</span>
+                            <i class="fas fa-plus faq-icon text-xs"></i>
+                        </div>
+                        <div class="faq-answer">
+                            We use the standard hotel calculation method. If you select Dec 1st to Dec 8th, it is calculated as 7 nights. The check-out day is not counted as a billable night.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item reveal-on-scroll stagger-delay-2">
+                        <div class="faq-question">
+                            <span>Is the 5% GST fixed for all amounts?</span>
+                            <i class="fas fa-plus faq-icon text-xs"></i>
+                        </div>
+                        <div class="faq-answer">
+                            We currently apply a flat 5% rate which is standard for budget to mid-range hotels and restaurants in India. However, luxury hotels (tariff > ₹7,500) may attract 12% or 18% GST. This calculator is optimized for the standard 5% tier.
+                        </div>
+                    </div>
+
+                    <div class="faq-item reveal-on-scroll stagger-delay-3">
+                        <div class="faq-question">
+                            <span>How are leap years handled?</span>
+                            <i class="fas fa-plus faq-icon text-xs"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Our algorithm is fully aware of calendar anomalies. If your date range includes February 29th of a leap year, it is correctly counted as a night in the total duration calculation.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="studio-section flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 uppercase tracking-widest reveal-on-scroll">
+            <div class="flex flex-col gap-2">
+                <p>&copy; 2024 Nights Calculator. All rights reserved.</p>
+                <p class="text-[10px] text-gray-700">Made for Indian Travelers & Planners</p>
+            </div>
+            <div class="flex gap-6 mt-4 md:mt-0">
+                <a href="#" class="hover:text-accent transition-colors">Privacy</a>
+                <a href="#" class="hover:text-accent transition-colors">Terms</a>
+                <a href="#" class="hover:text-accent transition-colors">Sitemap</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Get elements
+        const checkinInput = document.getElementById('checkin');
+        const checkoutInput = document.getElementById('checkout');
+        const pernightInput = document.getElementById('pernight');
+        const resultsDiv = document.getElementById('results');
+        const nightsResult = document.getElementById('nightsResult');
+        const totalCostWithoutGST = document.getElementById('totalCostWithoutGST');
+        const gstAmount = document.getElementById('gstAmount');
+        const totalCostWithGST = document.getElementById('totalCostWithGST');
+        const costRelatedElements = document.querySelectorAll('.cost-related');
+        const breakdownText = document.getElementById('breakdownText');
+        const infoMessage = document.getElementById('infoMessage');
+
+        const GST_RATE = 0.05; // 5% GST
+
+        // Set default dates (today and tomorrow)
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        checkinInput.value = today.toISOString().split('T')[0];
+        checkoutInput.value = tomorrow.toISOString().split('T')[0];
+
+        // Format Currency
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 2
+            }).format(amount);
+        };
+
+        // Calculate nights
+        function calculateNights() {
+            const checkin = new Date(checkinInput.value);
+            const checkout = new Date(checkinInput.value && checkoutInput.value ? checkoutInput.value : null);
+            
+            // Basic validation
+            if (!checkinInput.value || !checkoutInput.value) {
+                resultsDiv.classList.add('hidden');
+                infoMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Calculate difference in milliseconds
+            const diffTime = checkout - checkin;
+            // Standard calculation (e.g. 1st to 8th = 7 nights)
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) {
+                resultsDiv.classList.add('hidden');
+                infoMessage.classList.remove('hidden');
+                infoMessage.innerHTML = `
+                    <div class="flex items-start gap-4 text-red-400">
+                        <i class="fas fa-exclamation-triangle mt-1"></i>
+                        <p>Check-out date must be after check-in date.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Show results
+            infoMessage.classList.add('hidden');
+            resultsDiv.classList.remove('hidden');
+            nightsResult.textContent = diffDays;
+            
+            // Calculate total cost if per night rate is provided
+            const perNightRate = parseFloat(pernightInput.value);
+            
+            if (perNightRate && perNightRate > 0) {
+                const totalWithoutGST = diffDays * perNightRate;
+                const gst = totalWithoutGST * GST_RATE;
+                const totalWithGST = totalWithoutGST + gst;
+                
+                // Display values
+                totalCostWithoutGST.textContent = formatCurrency(totalWithoutGST);
+                gstAmount.textContent = formatCurrency(gst);
+                totalCostWithGST.textContent = formatCurrency(totalWithGST);
+                
+                // Show Cost sections
+                costRelatedElements.forEach(el => el.classList.remove('hidden'));
+                
+                // Update breakdown
+                breakdownText.innerHTML = `
+                    <div class="breakdown-row">
+                        <span>Base Calculation (${diffDays} nights × ${formatCurrency(perNightRate)})</span>
+                        <strong>${formatCurrency(totalWithoutGST)}</strong>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>GST (5%)</span>
+                        <strong>${formatCurrency(gst)}</strong>
+                    </div>
+                    <div class="breakdown-row" style="border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 10px; color: var(--accent-color);">
+                        <span>Total Payable</span>
+                        <strong style="color: var(--accent-color); font-size: 18px;">${formatCurrency(totalWithGST)}</strong>
+                    </div>
+                `;
+            } else {
+                // Hide cost sections if no price entered
+                costRelatedElements.forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        // Event listeners
+        checkinInput.addEventListener('change', calculateNights);
+        checkoutInput.addEventListener('change', calculateNights);
+        pernightInput.addEventListener('input', calculateNights);
+
+        // Ensure checkout is always after checkin
+        checkinInput.addEventListener('change', function() {
+            checkoutInput.min = checkinInput.value;
+            if (checkoutInput.value && checkoutInput.value <= checkinInput.value) {
+                const nextDay = new Date(checkinInput.value);
+                nextDay.setDate(nextDay.getDate() + 1);
+                checkoutInput.value = nextDay.toISOString().split('T')[0];
+            }
+            calculateNights();
+        });
+
+        // Set initial min dates
+        checkinInput.min = today.toISOString().split('T')[0];
+        checkoutInput.min = tomorrow.toISOString().split('T')[0];
+
+        // Initial calculation
+        calculateNights();
+
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach((element) => {
+            observer.observe(element);
+        });
+
+        // FAQ Accordion Logic
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Close all other items
+                document.querySelectorAll('.faq-item').forEach(otherItem => {
+                    otherItem.classList.remove('active');
+                });
+
+                // Toggle current item
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
